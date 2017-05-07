@@ -58,7 +58,7 @@ class TFAgent(object):
     self.episode = 0
     self.episode_reward = 0.0
     with self.graph.as_default():
-      self.session = tf.contrib.learn.monitored_session.MonitoredSession()
+      self.session = tf.train.MonitoredSession()
 
   def _create_graph(self):
     graph = tf.Graph()
@@ -123,7 +123,7 @@ def simple_model(features, targets, mode, params):
   reward, action = targets['reward'], targets['action']
   action = tf.one_hot(action, n_actions, 1.0, 0.0)
   action_q_values = tf.reduce_sum(
-    tf.mul(q_values, action), reduction_indices=[1])
+    q_values * action, reduction_indices=[1])
   loss = tf.contrib.losses.mean_squared_error(action_q_values, reward) 
   train_op = tf.contrib.layers.optimize_loss(
     loss, tf.contrib.framework.get_global_step(),
